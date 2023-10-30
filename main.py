@@ -1,8 +1,10 @@
 from tkinter import *
 import random as r
 import string
+import json
 
 my_password = ''
+
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
    
@@ -36,8 +38,25 @@ def save_password():
     mymail = mail.get()
     mypage = page.get()
     mypass = my_password_entry.get()
-    with open("data.txt","a") as file_data:
-        file_data.write(f"{mymail}|{mypage}|{mypass}\n")
+    new_data = {mypage: {
+        "email": mymail,
+        "password": mypass
+    }}
+    try:
+        with open("data.json","r") as file_data:
+            #read old data
+            data = json.load(file_data)
+            #update old data
+            data.update(new_data)
+            
+            with open("data.json","w") as file_data:
+                #saving data 
+                json.dump(data, file_data, indent=4)
+            
+    except FileNotFoundError:
+        with open("data.json","w") as file_data:
+            json.dump(new_data, file_data, indent=4)
+        
     
    
 # ---------------------------- UI SETUP ------------------------------- #
@@ -46,7 +65,7 @@ window.config(padx=125, pady=50)
 
 
 canvas = Canvas(width=300, height=200)
-logo = PhotoImage(file=r"C:\Users\user\onedrive\Documentos\Password Manager\\logo.png")
+logo = PhotoImage(file= "logo.png")
 canvas.create_image(100,100, image = logo)
 canvas.place(x=-160, y=-30)
 
@@ -59,10 +78,10 @@ number_text.grid(column=2, row=2)
 especial_text = Label(text="Especial Symbol", font=("Arial", 11, "bold"))
 especial_text.grid(column=2, row=3)
 
-mail_text = Label(text="Whick Mail", font=("Arial", 11, "bold"))
+mail_text = Label(text="Enter the E-MAIL", font=("Arial", 11, "bold"))
 mail_text.grid(column=2, row=4)
 
-page_text = Label(text="Wich page", font=("Arial", 11, "bold"))
+page_text = Label(text="Enter the WEB PAGE", font=("Arial", 11, "bold"))
 page_text.grid(column=2, row=5)
 
 my_password = Label(text=my_password, font=("Arial", 11, "bold"))
@@ -88,8 +107,11 @@ page.grid(column=3, row=5)
 generator_password = Button(text="Generate Password", command=pasword_gen)
 generator_password.grid(column=2, row=6)
 
-add_password = Button(text="add", command=save_password, width = 36)
+add_password = Button(text="add", command=save_password, width = 18)
 add_password.grid(column=2, row=7)
+
+search_password = Button(text="search", width = 18)
+search_password.grid(column=3, row=7)
 
 my_password_entry = Entry(width=20)
 my_password_entry.grid(column=3, row=6)
