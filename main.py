@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox 
 import random as r
 import string
 import json
@@ -57,8 +58,19 @@ def save_password():
         with open("data.json","w") as file_data:
             json.dump(new_data, file_data, indent=4)
         
-    
-   
+# ---------------------------- SHOW PASSWORD SETUP -----------------------#  
+def password_searcher():
+    mypage = page.get()
+    with open("data.json","r") as file_data:
+        data = json.load(file_data) 
+    try:
+        if mypage in data:
+            email = data[mypage]["email"]
+            password = data[mypage]["password"]
+            messagebox.showinfo(title=mypage, message=f"Email: {email}\nPassword: {password}")
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found.")
+            
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.config(padx=125, pady=50)
@@ -110,7 +122,7 @@ generator_password.grid(column=2, row=6)
 add_password = Button(text="add", command=save_password, width = 18)
 add_password.grid(column=2, row=7)
 
-search_password = Button(text="search", width = 18)
+search_password = Button(text="search", command=password_searcher, width = 18)
 search_password.grid(column=3, row=7)
 
 my_password_entry = Entry(width=20)
